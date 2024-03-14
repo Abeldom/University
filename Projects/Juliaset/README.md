@@ -1,7 +1,6 @@
-## This program visualises fractals. On the screen nice formulas and shapes will appear in different colores in a dinamic way.
-The user can alter the picture in many different ways. These are the options for the user to change the picture:
-
-To install the project, follow these steps:
-- Step 1: ...
-- Step 2: ...
-- Step 3: ...
+# This program visualises fractals. On the screen nice formulas and shapes will appear in different colors in a dinamic way. . 
+# The user can alter the picture in the following ways:
+- Move the mouse --> the fractal will change its shape
+- Press Click --> start/stop taking into consideration the position of the mouse
+- Scroll --> zoom in/zoom out related to the position of the mouse
+- Press arrow Up/Down/Right/Left --> move in a direction on the picture
