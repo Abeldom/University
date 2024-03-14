@@ -1,2 +1,7 @@
-aaa
-## dddd
+## This program visualises fractals. On the screen nice formulas and shapes will appear in different colores in a dinamic way.
+## The user can alter the picture in many different ways. These are the options for the user to change the picture:
+
+To install the project, follow these steps:
+- Step 1: ...
+- Step 2: ...
+- Step 3: ...
