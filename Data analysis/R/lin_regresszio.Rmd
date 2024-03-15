@@ -1,0 +1,173 @@
+---
+title: "lin_regresszio"
+author: "Zempléni András"
+date: "2023-12-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+##########
+#linearis regresszio
+##############
+
+homb<-read.table("http://zempleni.elte.hu/nyir-51-88jav.hom")
+homk<-read.table("http://zempleni.elte.hu/karc-51-88.hom")
+par(mfrow=c(1,1))
+r=c(0:37)
+
+#vajon egyenletesen no-e az atlaghom. marciusban?
+atl<-rep(0,times=31)
+for (i in 1:31) atl[i]=mean(homb[365*r+59+i,1])
+t<-c(1:31)
+lm1=lm(atl~t)
+summary(lm1)
+
+plot(t,atl)
+lines(lm1$fitted.values)
+#egesz jo
+hist(lm1$residuals) # nem az igazi, de talán elfogadható
+
+
+par(mfrow=c(1,1))
+r=c(0:37)
+
+
+#vajon egyenletesen no-e az atlaghom. aprilisban?
+
+t<-c(1:30)
+atl=t
+for (i in 1:30) atl[i]=mean(homb[365*r+90+i,1])
+
+lm1=lm(atl~t)
+summary(lm1)
+
+plot(t,atl)
+lines(lm1$fitted.values)
+#sokkal valtozekonyabb
+
+
+#majus
+t<-c(1:31)
+atl=t
+for (i in 1:31) atl[i]=mean(homb[365*r+120+i,1])
+
+lm1=lm(atl~t)
+summary(lm1)
+
+plot(t,atl)
+lines(lm1$fitted.values)
+
+#no es az egesz egyben (julius is):
+t<-c(1:153)
+atl=t
+for (i in 1:153) atl[i]=mean(homb[365*r+59+i,1])
+
+lm1=lm(atl~t)
+summary(lm1)
+
+plot(t,atl)
+lines(lm1$fitted.values)
+
+#jobb lenne kvadratikus
+
+
+t<-c(1:153)
+t2=t^2
+atl=t
+for (i in 1:153) atl[i]=mean(homb[365*r+59+i,1])
+
+lm1=lm(atl~t+t2)
+summary(lm1)
+
+plot(t,atl)
+lines(lm1$fitted.values)
+#ez az igazi
+
+lm1=lm(atl~t2)
+summary(lm1)
+plot(t,atl)
+lines(lm1$fitted.values)
+
+################
+#
+y=c(-0.82, 1.72, 2.72, 1.14, 0.96, 0.93, -0.08, 0.29, 3.38, 3.36)
+x=c(3.92, 2.63, 1.68, 2.57, 2.61, 2.78, 3.81, 2.89, 0.28, 0.94)
+plot(x,y)
+
+lm1=lm(y~x)
+summary(lm1)
+lines(x,lm1$fitted.values)
+
+x2=x^2
+lm1=lm(y~x+x2)
+summary(lm1)
+lines(sort(x),lm1$fitted.values[order(x)],col=4)
+
+x2=sin(x)
+x3=cos(x)
+lm1=lm(y~x3+x2)
+summary(lm1)
+xx=seq(min(x),max(x),0.01)
+yy=lm1$coef[1]+lm1$coef[2]*cos(xx)+lm1$coef[3]*sin(xx)
+lines(xx,yy,col=2)
+
+#######
+#saját adataink, lin. reg.
+
+
+
+#sajat adataink
+
+diak=read.table("http://zempleni.elte.hu/diak_23.csv",sep=",",header=T,dec=".",encoding="UTF-8")
+
+
+#probaljuk a testmagassagot elore jelezni:
+#elobb csinaljunk szamot a nembol
+
+nem=rep(0,times=dim(diak)[1])
+nem[diak[,4]=="f"]=1
+diak[,4]=nem
+
+round(cor(diak),3)
+
+lm1=lm(diak[,1]~diak[,2]+nem+diak[,3]+diak[,5]+diak[,6])
+summary(lm1)
+#hagyjuk el a legrosszabbat
+
+lm1=lm(diak[,1]~diak[,2]+nem+diak[,3])
+summary(lm1)
+
+lm1=lm(diak[,1]~diak[,2]+diak[,3])
+summary(lm1)
+
+lm1=lm(diak[,1]~diak[,3])
+summary(lm1) # az előző jobbnak tűnik, de persze ez véletlen
+plot(diak[,3],diak[,1])
+lines(diak[,3],lm1$fitted.values)
+hist(lm1$resid) #vannak kilógó értékek (>3sigma), ami nem jellemző a normális eloszlásra
+#nem igazan normalis, tehat a p-ertekek sem pontosak
+#de azért adjunk előrejelzést
+colnames(diak)=c("magassag","suly","cipo","nem","tan.ido","ut.ido")
+lm1=lm(magassag~ cipo, data=diak)
+new.sizes <- data.frame(
+  cipo= c(39,42, 44, 46)
+)
+predict(lm1, newdata = new.sizes, interval = "prediction") #konkrét értékre
+predict(lm1, newdata = new.sizes, interval = "confidence") #várható értékre
+#itt szép ábrák is vannak:
+#http://www.sthda.com/english/articles/40-regression-analysis/166-predict-in-r-model-predictions-and-confidence-intervals/
+  
+  #igy lehet előállítani:
+  library(ggplot2)
+ggplot(diak, aes(x = diak[,3], y = diak[,1])) +
+  geom_point() +
+  geom_smooth(method = lm, formula = y ~ x, se = TRUE)+labs(title="Sajat adataink",
+                                                            x ="Cipomeret", y = "Testmagassag (cm)")
+
+
+
+```

@@ -1,0 +1,215 @@
+---
+---
+---
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+\-\-- title: "Adatelemzés" output: pdf_document date: "2023-11-05" \-\--
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## **Adattisztítás**
+
+Helyesbítem a táblázatbeli adatokat ott, ahol a speciális karakterek nem olvashatóak rendesen.\
+
+```{r}
+print(names(xd))
+names(xd)[names(xd)=="foglalkoz\xe1s"]<-"foglalkozás"
+names(xd)[names(xd)=="testmagass\xe1g"]<-"testmagasság"
+names(xd)[names(xd)=="j\xf6vedelem"]<-"jövedelem"
+xd[xd$nem == "f\xe9rfi",1] <- "férfi"
+xd[xd$nem == "n\xf5",1] <- "nő"
+print(names(xd))
+```
+
+Azokat az adatsorokat nem veszem figyelembe, ahol a testmagasság vagy jövedelem negatív lenne, mert ezeknek az adatoknak nincs értelme. Ha egy személy bizonyos jövedelem elképesztően nagy a többihez képest, azt szintén nem tekintem megbízhatónak.
+
+```{r}
+xd <- xd[xd$testmagasság > 0 & xd$jövedelem>0 & xd$jövedelem<1000 & is.na(xd$jövedelem)==0,]
+xd
+
+```
+
+### Kategorizálások
+
+```{r}
+ferfiak <- xd[xd$nem=="férfi",]
+nok <- xd[xd$nem=="nő",]
+mernok<-xd[xd$foglalkozás=="mérnök",]
+ugyved<-xd[xd$foglalkozás=="Ügyvéd",]
+gepesz<-xd[xd$foglalkozás=="Gépészmérnök",]
+```
+
+## **Leíró statisztika**
+
+1.  
+
+    a)  Munkások nemük szerint
+
+    ```{r}
+    Kik<-c("Férfiak száma","Nők száma","Összesen")
+    Hányan<-c(nrow(ferfiak),nrow(nok),nrow(xd))
+
+    print(data.frame(Kik,Hányan))
+    ```
+
+    b)  Munkások foglalkozásuk szerint
+
+    ```{r}
+    library(dplyr)
+    dolgozok <- xd %>% group_by(foglalkozás) %>% 
+      summarise(
+        nr_individ=n(),
+        .groups = 'drop')
+
+    dolgozok
+    ```
+
+2.  A jövedelem, testmagasság és életkor általános összefoglaló adattáblázata
+
+```{r}
+library(dplyr)
+
+jovedelem <- xd %>%
+  summarize(
+    Min = min(jövedelem),
+    Max = max(jövedelem),
+    Mean = mean(jövedelem),
+    StDev = sd(jövedelem))
+
+testmagassag <- xd %>%
+  summarize(
+    Min = min(testmagasság),
+    Max = max(testmagasság),
+    Mean = mean(testmagasság),
+    StDev = sd(testmagasság))
+
+eletkor <- xd %>%
+  summarize(
+    Min = min(kor),
+    Max = max(kor),
+    Mean = mean(kor),
+    StDev = sd(kor))
+
+Tulajdonságok <- c("Jövedelem","Testmagasság","Életkor")
+Adatok<-rbind(jovedelem,testmagassag,eletkor)
+a <- data.frame(Tulajdonságok,Adatok)
+
+print(a)
+```
+
+3.  A jövedelem vizsgálata
+
+    a)  foglalkozástól függően
+
+```{r}
+library(dplyr)
+
+job_table <- xd %>%
+  group_by(foglalkozás) %>%
+  summarize(
+    nr_individ = table(foglalkozás),
+    Min = min(jövedelem),
+    Max = max(jövedelem),
+    Mean = mean(jövedelem),
+    Median = median(jövedelem))
+
+print(job_table)
+
+```
+
+A táblázat alapján a gépészmérnökök keresnek általában a legtöbb pénzt. Azonban ha valaki nagyon sokat szeretne kaszálni, akkor ügyvédként tudja maximalizálni a bevételét.
+
+b)  nemtől függően
+
+```{r}
+ferfiak_jov<-summary(ferfiak$jövedelem)
+nok_jov<-summary(nok$jövedelem)
+mindenki<-summary(xd$jövedelem)
+rbind(ferfiak_jov,nok_jov,mindenki)
+```
+
+A táblázatból az derül ki, hogy a férfiak csak nagyon kicsit keresnek jobban, mint a nők, de a rekord keresetet mégis egy nő tartja.
+
+4.  A munkások kor szerinti megoszlását nézem a nemük szerint csoportosítva.
+
+```{r}
+library(dplyr)
+
+gender_table <- xd %>%
+  group_by(nem) %>%
+  summarize(
+    Nr_of_ind = table(nem),
+    Min = min(kor),
+    Max = max(kor),
+    Mean = mean(kor),
+    Median = median(kor))
+
+
+all <- xd %>%
+  summarize(
+    Nr_of_ind= nrow(xd),
+    Min = min(kor),
+    Max = max(kor),
+    Mean = mean(kor),
+    Median = median(kor),
+  )
+
+#rbind(gender_table,all)
+
+# Combine the results into a table
+summary_table <- data.frame(
+  #Group = c(unique(xd$nem), "Mindenki"),
+  Nr_of_individuals = c(gender_table$Nr_of_ind, all$Nr_of_ind),
+  Min =c(gender_table$Min, all$Min),
+  Max = c(gender_table$Max, all$Max),
+  Mean = c(gender_table$Mean, all$Mean),
+  Median = c(gender_table$Median, all$Median))
+
+
+print(summary_table)
+
+```
+
+A fenti táblázat alapján az átlagos férfi munkás alig egy évvel idősebb, mint egy átlagos női munkás.
+
+## Grafikonok
+
+1.  A magasságot vizsgálom a nemek függvényében
+
+    ```{r}
+    boxplot(testmagasság ~ nem, data = xd, main = "Testmagasság és nem kapcsolata", xlab = "Nem", ylab = "Testmagasság")
+    ```
+
+A grafikon alapján a férfiak sokkal magasabbak, mint a nők. A férfiak középső 50%-a magasabb mint a nők középső 50%-a.
+
+2\.
+
+```{r}
+boxplot(jövedelem ~ foglalkozás, data = xd, main = "Jövedelem és foglalkozás kapcsolata", xlab = "Foglalkozás", ylab = "Jövedelem")#-------ez fontos
+
+```
+
+Gépészmérnöknek éri meg lenni a táblázat alapján.
+
+3.  
+
+```{r}
+hist(xd$kor, main = "Életkor és dolgozók száma", xlab = "Életkor", ylab = "Frequanecy")
+
+```
+
+A hisztogram alapján fiatalokból több dolgozó van, idősebb dolgozókból pedig egyre kevesebb.
+
+4.  
+
+```{r}
+hist(xd$jövedelem, main = "Jövedelem", xlab = "Jövedelem", ylab = "Frequanecy") # kevesen keresnek sokat, tobben kevesebbet
+
+```
+
+A táblázat alapján kevesen keresnek sokat, de sokan keresnek 200 és 400 között.

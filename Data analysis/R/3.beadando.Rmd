@@ -1,0 +1,101 @@
+---
+title: "3.beadando"
+author: "Domokos Abel"
+date: "2023-12-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Adattisztítás
+
+```{r}
+load("C:\\Users\\Abel\\Desktop\\MatStat\\input2.RData")
+
+xd <- xd[is.na(xd$testmagasság)==0 & xd$jövedelem<4000,]
+```
+
+```{r}
+
+nemek <- 0
+for (i in seq_along(xd$nem)){
+  if (xd$nem[i] == "nő"){
+    nemek[i] = 0 
+  }else{
+    nemek[i] = 1
+  }
+}
+varos <- 0
+for (i in seq_along(xd$város)) {
+  if (xd$város[i] == "Budapest") {
+    varos[i] <- 0
+  } else if (xd$város[i] == "Tázlár") {
+    varos[i] <- 1
+  } else if (xd$város[i] == "Vértesszőlős") {
+    varos[i] <- 2
+  }
+}
+foglalkozas <- 0
+for (i in seq_along(xd$foglalkozás)) {
+  if (xd$foglalkozás[i] == "Ügyvéd") {
+    foglalkozas[i] <- 0
+  } else if (xd$foglalkozás[i] == "Pincér") {
+    foglalkozas[i] <- 1
+  } else if (xd$foglalkozás[i] == "Programozó") {
+    foglalkozas[i] <- 2
+  }
+}
+
+kor = xd$kor
+magassag = xd$testmagasság
+jovedelem = xd$jövedelem
+
+modell = lm(jovedelem ~ kor + magassag + nemek + varos + foglalkozas)
+summary(modell)
+
+```
+
+A táblázat utolsó oszlopában a Pr(\>\|t\|) érték alapján elmondhatjuk, hogy a jövedelem összefüggésben áll a korral, a várossal és a foglalkozással, mivel 0,05 alatti értéket kaptunk. A magasságnak és a nemnek azonban nem igazán van köze van a jövedelemhez a táblázatban kapott eredmények alapján.
+
+Korrigált R négyzet értéke 0.2564, ami azt jelenti, hogy a modell az esetek 25,64%-ban ad helyes becslést a változók változékonyságára. Ez a szám elég kicsi, úgy néz ki nem elég pontos a modell.
+
+A reziduálisok normalitásának tesztelése érdekében végezzük el a shapiro tesztet, illetve tekintsük meg a Q-Q diagramot:
+
+```{r}
+shapiro.test(modell$residuals)
+qqnorm(modell$residuals)
+qqline(modell$residuals)
+```
+
+A shapiro teszt eredménye 6,325e-07, ez az érték nagyon kicsi, tehát a reziduálisok nem egyenletes eloszlást követnek.
+
+```{r}
+for (i in 0:2) {#városok
+  for (j in 0:2) {#foglalkozás
+    new_data <- data.frame(kor = 43, magassag = 178, nemek = 1, varos = i, foglalkozas = j)
+    prediction <-predict(modell, newdata = new_data, interval = "confidence")
+    cat(prediction[1],prediction[2],prediction[3]," \n")
+  }
+}
+
+
+```
+
+A táblázat eredményei alapján leolvashatjuk, hogy a város abszolút módon dominál: ha Budapesten dolgozik valaki, akkor állástól függetlenül többet keres, mint a többi városban. Szakma szerint pedig azt vesszük észre, hogy városon belül érvényes a jöv(ügyvéd)\>jöv(pincér)\>jöv(programozó) csökkenő sorrend. A modell hibás voltát mutatja az, hogy a pincérek városon belül mindig többet keresnek, mint a programozók. A második beadandóban egy ábráról leolvashattuk, hogy a programozók általában többet keresnek mint a pincérek.
+
+## Összefoglaló
+
+Utólag vettem észre, hogy az első beadandónál rossz adathalmazt használtam, mivel a letöltésnél a linknál a \* szimbólumot benne hagytam ("<https://zempleni.elte.hu/6>\*.RData"), sikerült letölteni egy adathalmazt, de az hibás volt és nem releváns ehhez az adathalmazhoz. Abban az elemzésben gépészmérnökök és mérnök szakmák voltak jelen, és nem volt benne város.
+
+A 2. beadandónál már jó adathalmazzal dolgoztam.
+
+Néhány hasznos információ:
+
+1.  Jövedelem szerint általában érvényes a következő növekvő sorrend: jöv(pincér)\<jöv(programozó)\<jöv(ügyvéd)
+2.  Jövedelem szempontjából számít ki milyen városban dolgozik: Budapesten lehet legtöbbet keresni, azután Tázláron, majd Vértesszőlősön.
+3.  Nincs összefüggés a nem és a jövedelem között.
+4.  Az életkor növekedésével a jövedelem is nő egy kissé.
+
+Ebben a 3. beadandóban újra beláttuk a vizsgálatok értelmében, hogy a jövedelem és a kor, város és foglalkozás között összefüggés van.

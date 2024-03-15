@@ -1,0 +1,170 @@
+---
+title: "2. beadandó - Domokos Ábel"
+output:
+  html_document: default
+  pdf_document: default
+date: "2023-12-04"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Adattisztítás
+
+```{r}
+load("C:\\Users\\Abel\\Desktop\\MatStat\\input2.RData")
+
+xd <- xd[is.na(xd$testmagasság)==0 & xd$jövedelem<4000,]
+```
+
+### **Alapstatisztikák**
+
+```{r}
+library(dplyr)
+
+nemek <- xd %>%
+  group_by(nem) %>%
+  summarise(
+    egyének_száma = table(nem))
+
+print(nemek)
+```
+
+```{r}
+data<- rbind(summary(xd$jövedelem),summary(xd$testmagasság),summary(xd$kor))
+krit <- c("Jövedelem","Testmagasság","Életkor")
+print(data.frame(krit,data))
+
+```
+
+```{r}
+hist(xd$testmagasság, main = "Testmagasságok eloszlása", xlab = "Magasság", ylab = "Gyakoriság")
+```
+
+```{r}
+hist(xd$kor, main = "Kor eloszlása", xlab = "Kor", ylab = "Gyakoriság")
+```
+
+```{r}
+hist(xd$jövedelem, main = "Jövedelem eloszlása", xlab = "Jövedelem", ylab = "Gyakoriság")
+```
+
+## **Jövedelem és foglalkozás kapcsolatának elemzése**
+
+```{r}
+boxplot(jövedelem ~ foglalkozás, data = xd, main = "Jövedelem és foglalkozás", xlab = "Foglalkozás", ylab = "Jövedelem")
+```
+
+A táblázat alapján erős összefüggés van a foglalkozások és azok bevétele között. Ezért a következő hipotézisrendszert fogalmazom meg:
+
+-   H0: A bevétel nem függ a választott foglalkozástól
+
+-   H1: A bevétel függ a foglalkozástól (ellenhipotézis)
+
+Végezzük el a chi-négyzetes tesztet:
+
+```{r}
+vizsgálandó_adatok <- table(xd$foglalkozás, xd$jövedelem)
+
+teszt <- chisq.test(vizsgálandó_adatok)
+
+print(teszt)
+```
+
+Az X-squared érték túl nagy eltérésre utal, és a p-value is jóval 0,05 alatti érték, ezért el kell vetnem az nullhipotézist, és az ellenhipotézis lesz igaz. Tehát valóban összefüggés van a foglalkozások és azok jövedelme között.
+
+## **Jövedelem és helyszínek közötti kapcsolat elemzése**
+
+```{r}
+boxplot(jövedelem ~ város, data = xd, main = "Jövedelem és városok", xlab = "Városok", ylab = "Jövedelem")
+```
+
+A fenti táblázat alapján az az előzetes feltételezésem, hogy számít milyen helyen történik a munka, hisz Budapesten nagyjából kétszer annyi az átlagfizetés, mint Vértesszőlősön, valamint nagyfizetésekre csak Budapesten látunk példát. Ezért a következő hipotézisrendszert választom:
+
+-   H0: A bevétel nem függ a munka helyszínétől
+
+-   H1: A bevétel függ a helyszíntől (ellenhipotézis)
+
+Teszteljük is le ezt az eredményt:
+
+```{r}
+vizsgálandó_adatok <- table(xd$jövedelem, xd$város)
+
+teszt <- chisq.test(vizsgálandó_adatok)
+
+print(teszt)
+```
+
+A p-value igen magas, nem esik a kritikus tartományba, ezért meg kell tartanom a nullhipotézist. ?(furcsa, nem erre az eredményre számítottam)?
+
+## **Jövedelem és életkor közötti kapcsolat elemzése**
+
+```{r}
+boxplot(jövedelem ~ kor, data = xd, main = "Jövedelem és életkor", xlab = "Kor", ylab = "Jövedelem")
+```
+
+A táblázat alapján az a sejtésem, hogy van némi összefüggés a jövedelem és az életkor között. Idősebb korral egyre magasabb fizetésre lehet szert tenni. A következő a hipotézisrendszerem:
+
+-   H0: A bevétel nem függ az életkortól
+
+-   H1: A bevétel függ az életkortól (ellenhipotézis)
+
+Következzen a teszt:
+
+```{r}
+vizsgálandó_adatok <- table(xd$jövedelem, xd$kor)
+
+teszt <- chisq.test(vizsgálandó_adatok)
+
+print(teszt)
+```
+
+Az eredmények megint a sejtésem ellen igazolta, a p érték nem esik a kritikus tartományba, ezért meg kell tartanom a nullhipotézist.
+
+## **Jövedelem és nemek közötti kapcsolat elemzése**
+
+```{r}
+boxplot(jövedelem ~ nem, data = xd, main = "Jövedelem és nem", xlab = "Nem", ylab = "Jövedelem")
+```
+
+```{r}
+data<- rbind(summary(xd$jövedelem[xd$nem=="férfi"]),summary(xd$jövedelem[xd$nem=="nő"]),summary(xd$jövedelem))
+krit <- c("férfiak jövedelme","nők jövedelme","Mind")
+print(data.frame(krit,data))
+
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+average_income_data <- xd %>%
+  filter(nem %in% c("nő", "férfi"))%>%
+  group_by(nem, kor) %>%
+  summarise(AvgIncome = mean(jövedelem, na.rm=TRUE), .groups='drop')%>%
+  ungroup()
+
+ggplot(average_income_data, aes(x=kor, y=AvgIncome, color = nem))+
+  geom_line()+
+  labs(x="Kor", y = "Átlagos bevétel", title = "Életkor szerinti átlagos bevétel nem szerint csoportosítva")+
+  scale_color_manual(values = c("blue", "red"))
+```
+
+A fenti táblázatok alapján nincs összefüggés a nemek és fizetések között. Íme a hipotézisrendszer:
+
+-   H0: A bevétel nem függ a nemtől
+
+-   H1: A bevétel függ a nemtől (ellenhipotézis)
+
+Lássuk a tesztet:
+
+```{r}
+vizsgálandó_adatok <- table(xd$jövedelem, xd$kor)
+
+teszt <- chisq.test(vizsgálandó_adatok)
+
+print(teszt)
+```
+
+A p érték ismételten magas, 0,05 feletti, ezért a nullhipotézist meg kell tartsuk, ezért valóban nincs összefüggés a vizsgált elemek között.

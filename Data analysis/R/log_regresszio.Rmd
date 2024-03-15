@@ -1,0 +1,76 @@
+---
+title: "log_regresszio"
+author: "Zempléni András"
+date: "2023-12-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#logisztikus regresszió példa
+df <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
+str(df)
+summary(df) #amerikai egyetemi felvételi adatok
+#rank: iskolai sorrend eredménye
+df$rank <- as.factor(df$rank) #mert nem arányskálán van mérve
+
+
+logit2 <- glm(admit ~ gpa+rank,data=df,family="binomial")
+
+summary(logit2)
+
+logit <- glm(admit ~ gre+gpa+rank,data=df,family="binomial")
+
+summary(logit)
+
+#előrejelzés
+x <- data.frame(gre=790,gpa=3.8,rank=as.factor(1))
+p<- predict(logit,x,type="response")
+
+p
+x <- data.frame(gre=290,gpa=2.8,rank=as.factor(4))
+p<- predict(logit,x,type="response")
+
+p
+#részletek: https://towardsdatascience.com/simply-explained-logistic-regression-with-example-in-r-b919acb1d6b3
+
+#Nadarajah-Watson módszer
+#próbáljuk meg áprilisra a nemparaméteres modellt is
+homb<-read.table("http://zempleni.elte.hu/nyir-51-88jav.hom")
+par(mfrow=c(1,1))
+r=c(0:37)
+
+t<-c(1:30)
+atl=t
+for (i in 1:30) atl[i]=mean(homb[365*r+90+i,1])
+
+lm1=lm(atl~t)
+summary(lm1)
+
+plot(t,atl)
+lines(lm1$fitted.values)
+#sokkal valtozekonyabb
+
+
+lines(loess.smooth(t, atl, span = 1/6, degree = 1,
+                   family = "gaussian", evaluation = 150),col=2)
+lines(loess.smooth(t, atl, span = 1/2, degree = 1,
+                   family = "gaussian", evaluation = 150),col=4)
+
+#ANOVA
+#sajat adataink
+
+diak=read.table("http://zempleni.elte.hu/diak_23.csv",sep=",",header=T,dec=".",fileEncoding="UTF8")
+
+nem=as.factor(diak$nem..f.n)
+mag=diak[,1]
+diak2=data.frame(nem,mag)
+
+aov.out = aov(mag ~ nem, data=diak2)
+summary(aov.out) #szignifikáns az eltérés a csoportok között
+boxplot(mag~nem)
+
+```
