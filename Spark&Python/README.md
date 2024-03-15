@@ -2,6 +2,6 @@
 
 #### Codes with Spark: changing datasets, SQL commands + efficient methods for distributing tasks between computers
 
-#### Data analysis in python: 
--- 1 part: analysing datasets and visual interpreting; libraries used: numpy, pandas, matplotlib.
--- 2 part: advanced statistics, clasters, classification problems,svm, naivebayes; library used: sklearn
+#### Data analysis using Sklearn: 
+- 1 part: analysing, adjusting and representing caracteristics of a dataset; libraries used: numpy, pandas, matplotlib
+- 2 part: advanced statistics, clasters, classification problems,svm, naivebayes; library used: sklearn
