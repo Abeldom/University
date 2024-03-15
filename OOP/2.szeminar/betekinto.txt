@@ -1,0 +1,20 @@
+objektum
+- tulajdonságok és műveletek
+- 
+
+DIÁK /név     char*
+     /átlag   double
+     /életkor int
+     +tevékenységek
+      - bulizik()
+      - tanul()           
+      - ingázik()
+/ belso, + mindenki l'tja
+
+ÁLLAT /faj
+      /eletkor
+      +taplalkozik
+  ---->
+      Madar
+      /szarnyfesztav
+      +repul()
