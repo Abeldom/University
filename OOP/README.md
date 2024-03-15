@@ -1,1 +1,1 @@
-### All I learned in university about OOP. Is a great source for revising the concepts and the methods
+### All my practices in university regarding OOP is here. Is a great source for revising the concepts and the methods.
