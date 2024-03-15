@@ -1,0 +1,27 @@
+fibonacci(34) = 5702887 
+inline function 
+#1 run: 0.043000
+#2 run: 0.043000
+#3 run: 0.042000
+#4 run: 0.043000
+#5 run: 0.042000
+average: 0.042600 
+
+fibonacci(34) = 5702887 
+normal function 
+#1 run: 0.043000
+#2 run: 0.043000
+#3 run: 0.041000
+#4 run: 0.042000
+#5 run: 0.043000
+average: 0.042400 
+
+fibonacci(34) = 5702887 
+macro function 
+#1 run: 0.030000
+#2 run: 0.031000
+#3 run: 0.029000
+#4 run: 0.030000
+#5 run: 0.031000
+average: 0.030200 
+
