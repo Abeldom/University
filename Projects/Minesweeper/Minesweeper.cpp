@@ -5,7 +5,7 @@
  
 using namespace std;
  
-void kiiratas(char latok[][50],int x,int y){
+void print_map(char latok[][50],int x,int y){
     cout<<" ";
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 3);
     for(int i=0;i<y;i++){
@@ -59,9 +59,9 @@ void kiiratas(char latok[][50],int x,int y){
  
  
  
-//egy bomba korul hany bomba van
-int vizsg1(char avan[][50],int m,int k,int x,int y,int & nb){
-            int ex=m-1;//ex=ettol,ax=addig
+//how many bombs are around 1 bomb
+int test1(char avan[][50],int m,int k,int x,int y,int & nb){
+            int ex=m-1;//ex=from,ax=to //ex=ettol,ax=addig
             int ax=m+1;
             int ey=k-1;
             int ay=k+1;
@@ -91,10 +91,11 @@ int vizsg1(char avan[][50],int m,int k,int x,int y,int & nb){
  
         return f-1;
 }
- 
-//a helyzet koruli- helyzetek koruli bombak szamanak a vizsgalata
-int vizsg2(char avan[][50],int m,int k,int x,int  y,int &nb){
-            int ex=m-1;//ex=ettol,ax=addig
+
+// how many bombs are around a position
+//a helyzetek koruli bombak szamanak a testalata
+int test2(char avan[][50],int m,int k,int x,int  y,int &nb){
+            int ex=m-1;//ex=from,ax=to
             int ax=m+1;
             int ey=k-1;
             int ay=k+1;
@@ -113,7 +114,7 @@ int vizsg2(char avan[][50],int m,int k,int x,int  y,int &nb){
  
             for(int i=ex;i<=ax;i++){
                 for(int j=ey;j<=ay;j++){
-                        int h=vizsg1(avan,i,j,x,y,nb);
+                        int h=test1(avan,i,j,x,y,nb);
                         if(avan[i][j]=='*' ){
                             if(h>7||nb==0){
                               return 8;
@@ -132,7 +133,7 @@ int vizsg2(char avan[][50],int m,int k,int x,int  y,int &nb){
  
  
  
-int rekurziv(char latok[][50],char avan[][50],int m,int k,int x,int y){
+int recursive(char latok[][50],char avan[][50],int m,int k,int x,int y){
      int ex=m-1;//ex=ettol,ax=addig
      int ax=m+1;
      int ey=k-1;
@@ -155,7 +156,7 @@ int rekurziv(char latok[][50],char avan[][50],int m,int k,int x,int y){
                 if(i==m && j==k){
                }else if(avan[i][j]=='0'&&latok[i][j]!='0'){
                    latok[i][j]='0';
-                   szaml=szaml+1+rekurziv(latok,avan,i,j,x,y);
+                   szaml=szaml+1+recursive(latok,avan,i,j,x,y);
                }else if(latok[i][j]!=avan[i][j]){
                 latok[i][j]=avan[i][j];
                 szaml++;
@@ -168,18 +169,18 @@ int rekurziv(char latok[][50],char avan[][50],int m,int k,int x,int y){
  
 int main()
 {
-    //adatok bekerese
+    //initial data for generating the map
     int n;
-    cout << "Jatekmod:easy   (n=1)" << endl ;
-    cout << "         medium (n=2)" << endl ;
-    cout << "         hard   (n=3)" << endl ;
+    cout << "Game mode:easy   (n=1)" << endl ;
+    cout << "           medium (n=2)" << endl ;
+    cout << "           hard   (n=3)" << endl ;
     cout << "n=" ;
     cin >> n;
  
  
  
     int x,y;
-    cout<< "Palya merete(x*y)(x-sor,y-oszlop):"<<endl;
+    cout<< "Map size(x-row,y-column):"<<endl;
     cout<< "  x=";
     cin>>x;
     cout<< "  y=";
@@ -198,8 +199,8 @@ int main()
  
  
  
-    char latok[x][50];//amit en latok a kepernyon
-    char avan[x][50];//ahogy van
+    char latok[x][50];//what the player sees
+    char avan[x][50];//real state
     for(int i=0;i<x;i++){
         for(int j=0;j<y;j++){
             latok[i][j]='?';
@@ -210,14 +211,14 @@ int main()
  
  
  
-    system("cls");//torli a kepernyot
-    cout<<bsz<<"bomba"<<endl;
-    kiiratas(latok,x,y);
+    system("cls");//clear the screen
+    cout<<bsz<<"bomb"<<endl;
+    print_map(latok,x,y);
     cout<<endl;
  
  
  
-    //bombak elhelyezese
+    //put bombs
  
     srand(time(NULL));
     int r;
@@ -242,7 +243,7 @@ int main()
         }
     }
  
-//bombak ujravizsgalasa
+//but bombs again in case of bad positioning
 bool logic=true;
 int nb=0;
     for(int i=0;i<bsz;i++){
@@ -251,7 +252,7 @@ int nb=0;
             k=bomb[i][1];
             }
             nb=0;
-                if (vizsg1(avan,m,k,x,y,nb)>7||vizsg2(avan,m,k,x,y,nb)>7){
+                if (test1(avan,m,k,x,y,nb)>7||test2(avan,m,k,x,y,nb)>7){
  
                     logic=false;
                     avan[m][k]=48;
@@ -276,7 +277,7 @@ int nb=0;
                }
     }
  
-    //avan--a bomba koruli helyeknek erteket adok
+    //avan--set value to all positions near bombs
     int ex,ax,ey,ay;
     for(int i=0;i<bsz;i++){
          m=bomb[i][0];
@@ -308,15 +309,15 @@ int nb=0;
              }
     }
 /*
-    kiiratas(avan,x,y);
+ print_map(avan,x,y);
 */
  
     int sor,oszlop,szaml=0,kell=(x*y)-bsz;
     int S=x*y;
     do{
-        cout<<"sor:";
+        cout<<"row:";
         cin>>sor;
-        cout<<"oszlop:";
+        cout<<"column:";
         cin>>oszlop;
         system("cls");
         if(avan[sor][oszlop]=='*'){
@@ -327,26 +328,27 @@ int nb=0;
             }
         }else{
             if(avan[sor][oszlop]=='0'){
-               szaml=szaml+rekurziv(latok,avan,sor,oszlop,x,y);
+               szaml=szaml+recursive(latok,avan,sor,oszlop,x,y);
  
            }else{
                latok[sor][oszlop]=avan[sor][oszlop];
                szaml++;
            }
-           kiiratas(latok,x,y);
+         print_map(latok,x,y);
            if(szaml!=kell){
-                cout<<bsz<<" bomba van osszesen a(z) "<<S<<" helybol"<<endl;
-           cout<<kell-szaml<<" helyet kell meg kiutni,te eddig "<<szaml<<" helyet utottel ki"<<endl;
+                cout<<bsz<<" bombs are out of the possible "<<S<<" positions"<<endl;
+           cout<<kell-szaml<<" positions without bomb need to be discovered; "<<endl;
+           cout<<szaml<<" positions without bomb are discovered"<<endl;
            cout<<endl;
            }
         }
     }while(avan[sor][oszlop]!='*' && szaml!=kell);
  
     if(avan[sor][oszlop]=='*'){
-            kiiratas(latok,x,y);
-            cout<<"oopsz,rosszul szamoltad ki/vagy rosszul tippeltel!"<<endl;
+         print_map(latok,x,y);
+            cout<<"oops, wrong calculation / bad tip!"<<endl;
     }else{
-    cout<<"Nyertel"<<endl;
+    cout<<"You won!"<<endl;
     }
  
     return 0;
