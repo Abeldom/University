@@ -1,1 +1,1 @@
-### This is a great source for revising the concept of objectum oriented programming.
+### All I learned in university about OOP. Is a great source for revising the concepts and the methods
