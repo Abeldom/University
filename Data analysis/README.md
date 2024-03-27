@@ -1,6 +1,11 @@
 #### The codes were developed using the Yupiter coding platform.
 
-#### Codes with Spark: changing datasets, SQL commands + efficient methods for distributing tasks between computers
+#### Programming in R: 
+- I extracted information from a dataset using statistical tools.
+- process: adjust, analyse, represent, interpret outcomes 
+
+#### Codes with Spark: 
+- changing datasets, SQL commands + efficient methods for distributing tasks between computers
 
 #### Data analysis using Sklearn: 
 - part 1: analysing, adjusting and representing caracteristics of a dataset; libraries used: numpy, pandas, matplotlib
