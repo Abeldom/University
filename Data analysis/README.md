@@ -2,7 +2,7 @@
 
 #### Programming in R: 
 - I extracted information from a dataset using statistical tools.
-- process: adjust, analyse, represent, interpret outcomes 
+- process: adjust, analyse, represent, interpret the outcome
 
 #### Codes with Spark: 
 - changing datasets, SQL commands + efficient methods for distributing tasks between computers
