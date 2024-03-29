@@ -165,18 +165,18 @@ void szivarvany(int pix,int n){
   }
 }
 
-//void fekete(pix,n){
-//  if(n==maxbrightness){
-//     pixels[pix + 0] = 0;
-//        pixels[pix + 1] = 0;
-//        pixels[pix + 2] = 0;
-//        pixels[pix + 3] = 255;
-//  }else{
-//    var bright = map(n, 0, maxbrightness, 0, 1);
-//    bright=map(sqrt(bright),0,1,0,255);
-//    pixels[pix + 1] = bright*2;
-//    pixels[pix + 2] = bright/2;
-//    pixels[pix + 0] = bright/2;
-//    pixels[pix + 3] = 155;
-//  }
-//}
+void fekete(pix,n){
+  if(n==maxbrightness){
+     pixels[pix + 0] = 0;
+        pixels[pix + 1] = 0;
+        pixels[pix + 2] = 0;
+        pixels[pix + 3] = 255;
+  }else{
+    var bright = map(n, 0, maxbrightness, 0, 1);
+    bright=map(sqrt(bright),0,1,0,255);
+    pixels[pix + 1] = bright*2;
+    pixels[pix + 2] = bright/2;
+    pixels[pix + 0] = bright/2;
+    pixels[pix + 3] = 155;
+  }
+}
