@@ -1,0 +1,7 @@
+1_koch_sajat    1.2468    (24,5,-2)       igazi> 1.262
+2_sierpinski    1.5855    (24,5,-1)       igazi> 1.584
+3_circle_line   0.9799    (24,5,-1)       igazi> 1
+3_circle_full   1.9759    (24,5,-1)       igazi> 2
+4_carpet        1.8706    (24,5,-2)       igazi> 1.8928
+4_carpet2       1.868     (24,3,-2)
+5_vicsek       1.4852    (15,1,-2)       igazi> 1.464
