@@ -1,3 +1,3 @@
-# These codes are written by Ábel Domokos.
+### These codes are written by Ábel Domokos.
 
-# Content: private projects, exercises from University
+### Content: private projects, exercises from University
