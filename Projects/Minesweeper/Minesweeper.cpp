@@ -330,7 +330,7 @@ int nb=0;
             if(avan[sor][oszlop]=='0'){
                szaml=szaml+recursive(latok,avan,sor,oszlop,x,y);
  
-           }else{
+           }else if(latok[sor][oszlop]=='?'){
                latok[sor][oszlop]=avan[sor][oszlop];
                szaml++;
            }
