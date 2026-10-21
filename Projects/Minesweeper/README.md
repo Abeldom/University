@@ -8,13 +8,13 @@ It started as a console game and now also has a clickable Windows version.
 I was interested in the map-generating rules of the game. The original version is played with keyboard
 input. The goal was to generate a map that follows these rules:
 
-- The first click is always safe, with no bomb (goal, **not implemented yet**: the bombs are placed before the first click)
 - A bomb can never have only bomb neighbours (implemented: such a bomb is moved)
 - The number of bombs depends on the difficulty level: 20 / 30 / 40 % of the cells (implemented)
 
 Further development:
 
-- Mouse input: left click = reveal, right click = put / take away a flag (done in the window version)
+- The first click is always safe, with no bomb
+
 
 ## Demo
 
