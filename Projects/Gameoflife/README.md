@@ -16,7 +16,7 @@ Open `gameoflife.pde` in Processing and click **Run**.
 
 ## Screenshots
 
-![Game of Life running in Processing](Screenshot%202026-11-06%20163230.png)
+![Game of Life with multiple live-cell patterns](Screenshot%202026-11-06%20163821.png)
 
 ## Demo video
 
