@@ -1,10 +1,13 @@
 from PIL import Image
 import math
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
 
-image_path = "koch_enyem.png" 
-output_path = "modified_example.png"
+project_dir = Path(__file__).resolve().parents[1]
+image_path = project_dir / "images" / "koch_curve_generated.png"
+output_path = project_dir / "images" / "modified_example.png"
 
 image = Image.open(image_path)
 
@@ -68,6 +71,7 @@ plt.title('')
 
 plt.grid(True)
 plt.legend()
+plt.savefig(project_dir / "images" / "koch_regression.png")
 plt.show()
 
 # for x in range(width):

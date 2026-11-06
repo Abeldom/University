@@ -1,4 +1,8 @@
 from PIL import Image, ImageDraw
+from pathlib import Path
+
+project_dir = Path(__file__).resolve().parents[1]
+image_dir = project_dir / "images"
 
 def koch_curve(start, end, order):
     if order == 0:
@@ -37,5 +41,5 @@ for i in range(len(points)-1):
     draw.line([points[i],points[i+1]], fill="black", width=1)
 
 img = img.transpose(Image.FLIP_TOP_BOTTOM)
-img.save("koch_enyem.png")
+img.save(image_dir / "koch_curve_generated.png")
 img.show()

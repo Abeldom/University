@@ -1,4 +1,8 @@
 from PIL import Image, ImageDraw
+from pathlib import Path
+
+project_dir = Path(__file__).resolve().parents[1]
+image_dir = project_dir / "images"
 
 def draw_square(x, y, size):
     half_size = size / 2
@@ -28,4 +32,4 @@ generate_vicsek(image_size/2,image_size/2, image_size, depth)
 # Example: Generate Vicsek fractal image with size 100 and depth 3
 image.show()
 # Save the image
-image.save("5_vicsek.png")
+image.save(image_dir / "5_vicsek.png")
