@@ -2,6 +2,8 @@
 
 This program visualizes fractals, displaying colorful patterns that change dynamically.
 
+**Programming language:** Processing (Java-based)
+
 ## Controls
 
 - Move the mouse to change the shape of the fractal.
