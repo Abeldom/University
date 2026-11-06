@@ -1,6 +1,22 @@
-#### This program visualises fractals. On the screen nice formulas and shapes will appear in different colors in a dinamic way.
-#### The user has the ability to customize the picture through the following methods:
-- Move the mouse --> the fractal will change its shape
-- Press Click --> start/stop taking into consideration the position of the mouse
-- Scroll --> zoom in/zoom out related to the position of the mouse
-- Press arrow Up/Down/Right/Left --> move in a direction on the picture
+# Julia Set
+
+This program visualizes fractals, displaying colorful patterns that change dynamically.
+
+## Controls
+
+- Move the mouse to change the shape of the fractal.
+- Click to start or stop using the mouse position.
+- Scroll to zoom in or out around the mouse position.
+- Use the arrow keys to move around the image.
+
+## Screenshots
+
+![Julia set screenshot 1](k1.png)
+
+![Julia set screenshot 2](k2.png)
+
+![Julia set screenshot 3](k3.png)
+
+## Video
+
+[Watch the Julia set demo](juliaset%202024-04-04%2014-25-36.mp4)
